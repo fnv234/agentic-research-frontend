@@ -6,26 +6,25 @@ import {
 } from 'recharts';
 
 export function AgentPerspectives({ simulation, scenario }) {
-  if (!simulation || !simulation.agent_perspectives || simulation.agent_perspectives.length === 0) {
-    return <div className={styles.noData}>No agent data available</div>;
+  if (!simulation) {
+    return <div className={styles.noData}>No simulation data available</div>;
   }
 
   const agents = simulation.agent_perspectives;
 
+  if (!agents || agents.length === 0) {
+    return <div className={styles.noData}>No agent data available</div>;
+  }
+
   const radarData = agents.map(agent => ({
     name: agent.agent,
-    priority: (agent.priority * 100).toFixed(1),
+    priority: Math.round(agent.priority * 100),
     fullMark: 100
-  }));
-
-  const kpiData = agents.map(agent => ({
-    name: agent.agent,
-    priority: (agent.priority * 100).toFixed(1)
   }));
 
   return (
     <div className={styles.container}>
-      <h2>🤖 Agent Personalities & Recommendations</h2>
+      <h2>Agent Personalities & Recommendations</h2>
       <p className={styles.subtitle}>How each executive agent views the {scenario} scenario</p>
 
       <div className={styles.section}>
@@ -47,15 +46,11 @@ export function AgentPerspectives({ simulation, scenario }) {
             <div className={styles.agentHeader}>
               <h3>{agent.agent}</h3>
               <span className={styles.priority}>
-                Priority: {(agent.priority * 100).toFixed(0)}%
+                {Math.round(agent.priority * 100)}%
               </span>
             </div>
             
             <div className={styles.agentInfo}>
-              <div className={styles.infoRow}>
-                <label>Role:</label>
-                <span>{agent.agent}</span>
-              </div>
               <div className={styles.infoRow}>
                 <label>KPI Focus:</label>
                 <span>{agent.kpi_focus}</span>
@@ -65,10 +60,6 @@ export function AgentPerspectives({ simulation, scenario }) {
                 <span>{agent.target}</span>
               </div>
               <div className={styles.infoRow}>
-                <label>Personality:</label>
-                <span>{JSON.stringify(agent.personality)}</span>
-              </div>
-              <div className={styles.infoRow}>
                 <label>Recommendation:</label>
                 <span className={styles.recommendation}>{agent.recommendation}</span>
               </div>
@@ -76,29 +67,6 @@ export function AgentPerspectives({ simulation, scenario }) {
           </div>
         ))}
       </div>
-
-      {simulation.agent_feedback && (
-        <div className={styles.section}>
-          <h3>Board Feedback</h3>
-          <div className={styles.feedback}>
-            {typeof simulation.agent_feedback === 'string' 
-              ? <p>{simulation.agent_feedback}</p>
-              : <pre>{JSON.stringify(simulation.agent_feedback, null, 2)}</pre>
-            }
-          </div>
-        </div>
-      )}
-
-      {simulation.agent_recommendations && simulation.agent_recommendations.length > 0 && (
-        <div className={styles.section}>
-          <h3>Negotiated Strategy Recommendations</h3>
-          <ul className={styles.recommendations}>
-            {simulation.agent_recommendations.map((rec, idx) => (
-              <li key={idx}>{rec}</li>
-            ))}
-          </ul>
-        </div>
-      )}
     </div>
   );
 }

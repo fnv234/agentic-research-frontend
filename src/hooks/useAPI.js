@@ -295,27 +295,36 @@ export function useSimulator() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(params)
       });
-      
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      
+
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status}`);
+      }
+
       const data = await response.json();
+      
+      if (data.results && !data.results.agent_perspectives) {
+        console.warn('No agent_perspectives in response');
+        data.results.agent_perspectives = [];
+      }
+
       setCurrentSimulation(data);
-      setSimulations([...simulations, data]);
+      setSimulations(prev => [...prev, data]);
+      
       return data;
     } catch (err) {
+      console.error('Simulation error:', err);
       setError(err.message);
       return null;
     } finally {
       setLoading(false);
     }
-  }, [simulations]);
+  }, []);
 
   return {
     simulations,
     currentSimulation,
     loading,
     error,
-    runSimulation,
-    setCurrentSimulation
+    runSimulation
   };
 }
