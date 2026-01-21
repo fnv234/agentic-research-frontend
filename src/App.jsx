@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ComparisonView } from './components/ComparisonView';
 import { AnalyticsDashboard } from './components/AnalyticsDashboard';
-import { ThresholdManager } from './components/ThresholdManager';
 import { SimulationRunner } from './components/SimulationRunner';
 import styles from './App.module.css';
 
@@ -81,12 +80,6 @@ function App() {
           >
             🚀 Simulations
           </button>
-          <button
-            className={`${styles.navBtn} ${activeTab === 'thresholds' ? styles.active : ''}`}
-            onClick={() => setActiveTab('thresholds')}
-          >
-            ⚙️ Thresholds
-          </button>
         </nav>
       </header>
 
@@ -97,18 +90,13 @@ function App() {
             Make sure the backend is running on {import.meta.env.VITE_API_URL || 'http://localhost:5001'}
           </div>
         )}
-
         <div className={styles.content}>
           {activeTab === 'analytics' && <AnalyticsDashboard />}
           {activeTab === 'comparison' && <ComparisonView />}
           {activeTab === 'simulations' && <SimulationRunner />}
-          {activeTab === 'thresholds' && <ThresholdManager />}
         </div>
+  );
       </main>
-
-      <footer className={styles.footer}>
-        <p>Agentic Research Frontend v0.1.0 | © 2024</p>
-      </footer>
     </div>
   );
 }

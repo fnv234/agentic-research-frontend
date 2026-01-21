@@ -1,136 +1,255 @@
 import React, { useEffect, useState } from 'react';
-import { useSimulations } from '../hooks/useAPI';
+import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { useSimulator } from '../hooks/useAPI';
 import styles from './ComparisonView.module.css';
 
 export function ComparisonView() {
-  const { runs, realData, loading, error, fetchRuns, fetchRealData, compareSimulation } = useSimulations();
-  const [selectedRunId, setSelectedRunId] = useState(null);
-  const [comparisonData, setComparisonData] = useState(null);
-  const [comparing, setComparing] = useState(false);
+  const { simulations, runSimulation } = useSimulator();
+  const [realData, setRealData] = useState(null);
+  const [selectedSim, setSelectedSim] = useState(null);
+  const [comparisonMetrics, setComparisonMetrics] = useState(null);
 
   useEffect(() => {
-    fetchRuns();
-    fetchRealData();
-  }, [fetchRuns, fetchRealData]);
+    // Load real data from CSV
+    loadRealData();
+  }, []);
 
-  const handleCompare = async (runId) => {
-    setSelectedRunId(runId);
-    setComparing(true);
-    const result = await compareSimulation(runId);
-    setComparisonData(result);
-    setComparing(false);
+  const loadRealData = async () => {
+    try {
+      const baseUrl = (import.meta.env.VITE_API_URL || 'http://localhost:5001').replace(/\/$/, '');
+      const response = await fetch(`${baseUrl}/api/runs/real`);
+      if (response.ok) {
+        const data = await response.json();
+        setRealData(data.data || []);
+      }
+    } catch (err) {
+      console.error('Error loading real data:', err);
+    }
   };
 
-  const renderVarianceCell = (variance, variancePercent) => {
-    if (!variance) return <span>-</span>;
+  const handleRunSimulation = async () => {
+    const newSim = await runSimulation({
+      scenario: 'simple_deterministic',
+      agent_collaboration: 'collaborative',
+      risk_tolerance: 0.5,
+      num_years: 5
+    });
     
-    const isNegative = variance < 0;
-    const className = isNegative ? styles.negative : styles.positive;
-    
-    return (
-      <span className={className}>
-        {isNegative ? '▼' : '▲'} {Math.abs(variancePercent).toFixed(2)}%
-      </span>
-    );
+    if (newSim && selectedSim === null) {
+      setSelectedSim(newSim);
+      calculateComparison(newSim);
+    }
   };
 
-  if (loading) return <div className={styles.loading}>Loading simulation data...</div>;
-  if (error) return <div className={styles.error}>Error: {error}</div>;
+  const calculateComparison = (simulation) => {
+    if (!realData || realData.length === 0) return;
+
+    // Get average metrics from real data
+    const avgReal = {
+      profit: realData.reduce((sum, d) => sum + (d.accumulated_profit || 0), 0) / realData.length,
+      risk: realData.reduce((sum, d) => sum + (d.compromised_systems || 0), 0) / realData.length,
+      availability: realData.reduce((sum, d) => sum + (d.systems_availability || 0.95), 0) / realData.length
+    };
+
+    // Get metrics from simulation
+    const simData = simulation.results.summary;
+    const simMetrics = simulation.results.time_series;
+
+    const metrics = {
+      profit: {
+        real: avgReal.profit,
+        simulated: simData.final_profit,
+        variance: simData.final_profit - avgReal.profit,
+        variancePercent: ((simData.final_profit - avgReal.profit) / avgReal.profit * 100)
+      },
+      risk: {
+        real: avgReal.risk,
+        simulated: simData.final_risk,
+        variance: simData.final_risk - avgReal.risk,
+        variancePercent: ((simData.final_risk - avgReal.risk) / avgReal.risk * 100)
+      },
+      availability: {
+        real: avgReal.availability,
+        simulated: simData.avg_availability,
+        variance: simData.avg_availability - avgReal.availability,
+        variancePercent: ((simData.avg_availability - avgReal.availability) / avgReal.availability * 100)
+      }
+    };
+
+    setComparisonMetrics({
+      ...metrics,
+      timeSeries: simMetrics,
+      realAvg: avgReal
+    });
+  };
+
+  const handleSelectSimulation = (sim) => {
+    setSelectedSim(sim);
+    calculateComparison(sim);
+  };
+
+  const comparisonChartData = [
+    {
+      name: 'Profit',
+      real: comparisonMetrics?.profit.real / 1000000 || 0,
+      simulated: comparisonMetrics?.profit.simulated / 1000000 || 0
+    },
+    {
+      name: 'Risk',
+      real: comparisonMetrics?.risk.real || 0,
+      simulated: comparisonMetrics?.risk.simulated || 0
+    },
+    {
+      name: 'Availability',
+      real: (comparisonMetrics?.availability.real * 100) || 0,
+      simulated: (comparisonMetrics?.availability.simulated * 100) || 0
+    }
+  ];
 
   return (
     <div className={styles.container}>
-      <h2>Simulation vs Real Data Comparison</h2>
+      <h2>Simulations vs Real Data Comparison</h2>
       
-      <div className={styles.section}>
-        <h3>Select Simulation to Compare</h3>
-        {runs.length === 0 ? (
-          <p>No simulation runs available</p>
+      <div className={styles.controlPanel}>
+        <button onClick={handleRunSimulation} className={styles.runBtn}>
+          ▶ Run New Simulation
+        </button>
+      </div>
+
+      {realData && (
+        <div className={styles.dataSourceInfo}>
+          <p>📊 Real Data: <strong>{realData.length} runs</strong> from sim_data.csv</p>
+          {realData.length > 0 && (
+            <p>
+              Avg Profit: ${(realData.reduce((sum, d) => sum + (d.accumulated_profit || 0), 0) / realData.length / 1000000).toFixed(2)}M | 
+              Avg Risk: {(realData.reduce((sum, d) => sum + (d.compromised_systems || 0), 0) / realData.length).toFixed(1)} systems
+            </p>
+          )}
+        </div>
+      )}
+
+      <div className={styles.simulationsSection}>
+        <h3>Simulation Runs</h3>
+        {simulations.length === 0 ? (
+          <p className={styles.noData}>No simulations run yet. Click "Run New Simulation" to start.</p>
         ) : (
-          <div className={styles.runList}>
-            {runs.map(run => (
+          <div className={styles.simList}>
+            {simulations.map((sim, idx) => (
               <div 
-                key={run.id}
-                className={`${styles.runCard} ${selectedRunId === run.id ? styles.selected : ''}`}
+                key={idx}
+                className={`${styles.simItem} ${selectedSim?.simulation_id === sim.simulation_id ? styles.active : ''}`}
+                onClick={() => handleSelectSimulation(sim)}
               >
-                <h4>{run.name}</h4>
-                <p className={styles.timestamp}>
-                  {new Date(run.timestamp).toLocaleDateString()}
-                </p>
-                <p className={styles.status}>Status: <strong>{run.status}</strong></p>
-                <button 
-                  onClick={() => handleCompare(run.id)}
-                  disabled={comparing}
-                >
-                  {comparing && selectedRunId === run.id ? 'Comparing...' : 'Compare'}
-                </button>
+                <strong>{sim.parameters.scenario}</strong>
+                <small>{sim.parameters.agent_collaboration}</small>
+                <small>Profit: ${(sim.results.summary.final_profit / 1000000).toFixed(2)}M</small>
               </div>
             ))}
           </div>
         )}
       </div>
 
-      {comparisonData && (
-        <div className={styles.section}>
-          <h3>Comparison Results - {comparisonData.simulation_id}</h3>
-          
-          {Object.entries(comparisonData.agents || {}).map(([agentName, kpis]) => (
-            <div key={agentName} className={styles.agentComparison}>
-              <h4>{agentName}</h4>
-              <table>
-                <thead>
-                  <tr>
-                    <th>Metric</th>
-                    <th>Simulated</th>
-                    <th>Real</th>
-                    <th>Variance</th>
-                    <th>Variance %</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {Object.entries(kpis).map(([kpiName, values]) => (
-                    <tr key={kpiName}>
-                      <td>{kpiName}</td>
-                      <td>{typeof values.simulated === 'number' ? values.simulated.toLocaleString() : values.simulated}</td>
-                      <td>{typeof values.real === 'number' ? values.real.toLocaleString() : values.real}</td>
-                      <td>{values.variance?.toLocaleString()}</td>
-                      <td>{renderVarianceCell(values.variance, values.variance_percent)}</td>
-                      <td>
-                        <span className={styles[values.status?.toLowerCase()]}>
-                          {values.status}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          ))}
-        </div>
-      )}
+      {comparisonMetrics && selectedSim && (
+        <div className={styles.comparisonSection}>
+          <h3>Detailed Comparison: {selectedSim.parameters.scenario}</h3>
 
-      {realData && (
-        <div className={styles.section}>
-          <h3>Current Real Data</h3>
-          <p className={styles.timestamp}>
-            Last updated: {new Date(realData.timestamp).toLocaleString()}
-          </p>
-          
-          {Object.entries(realData.agents || {}).map(([agentName, metrics]) => (
-            <div key={agentName} className={styles.realDataCard}>
-              <h4>{agentName}</h4>
-              <div className={styles.metricsGrid}>
-                {Object.entries(metrics).map(([metricName, value]) => (
-                  <div key={metricName} className={styles.metric}>
-                    <span className={styles.label}>{metricName}</span>
-                    <span className={styles.value}>
-                      {typeof value === 'number' ? value.toLocaleString() : value}
-                    </span>
-                  </div>
-                ))}
+          <div className={styles.metricsGrid}>
+            <div className={styles.metricCard}>
+              <h4>Accumulated Profit</h4>
+              <div className={styles.comparison}>
+                <div className={styles.metricValue}>
+                  <label>Real Avg</label>
+                  <p>${(comparisonMetrics.profit.real / 1000000).toFixed(2)}M</p>
+                </div>
+                <div className={styles.metricValue}>
+                  <label>Simulated</label>
+                  <p>${(comparisonMetrics.profit.simulated / 1000000).toFixed(2)}M</p>
+                </div>
+                <div className={`${styles.metricValue} ${comparisonMetrics.profit.variance >= 0 ? styles.positive : styles.negative}`}>
+                  <label>Variance</label>
+                  <p>{comparisonMetrics.profit.variancePercent > 0 ? '+' : ''}{comparisonMetrics.profit.variancePercent.toFixed(1)}%</p>
+                </div>
               </div>
             </div>
-          ))}
+
+            <div className={styles.metricCard}>
+              <h4>Systems at Risk</h4>
+              <div className={styles.comparison}>
+                <div className={styles.metricValue}>
+                  <label>Real Avg</label>
+                  <p>{comparisonMetrics.risk.real.toFixed(1)}</p>
+                </div>
+                <div className={styles.metricValue}>
+                  <label>Simulated</label>
+                  <p>{comparisonMetrics.risk.simulated.toFixed(1)}</p>
+                </div>
+                <div className={`${styles.metricValue} ${comparisonMetrics.risk.variance <= 0 ? styles.positive : styles.negative}`}>
+                  <label>Variance</label>
+                  <p>{comparisonMetrics.risk.variancePercent > 0 ? '+' : ''}{comparisonMetrics.risk.variancePercent.toFixed(1)}%</p>
+                </div>
+              </div>
+            </div>
+
+            <div className={styles.metricCard}>
+              <h4>Systems Availability</h4>
+              <div className={styles.comparison}>
+                <div className={styles.metricValue}>
+                  <label>Real Avg</label>
+                  <p>{(comparisonMetrics.availability.real * 100).toFixed(1)}%</p>
+                </div>
+                <div className={styles.metricValue}>
+                  <label>Simulated</label>
+                  <p>{(comparisonMetrics.availability.simulated * 100).toFixed(1)}%</p>
+                </div>
+                <div className={`${styles.metricValue} ${comparisonMetrics.availability.variance >= 0 ? styles.positive : styles.negative}`}>
+                  <label>Variance</label>
+                  <p>{comparisonMetrics.availability.variancePercent > 0 ? '+' : ''}{comparisonMetrics.availability.variancePercent.toFixed(1)}%</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className={styles.chartSection}>
+            <h4>Key Metrics Comparison</h4>
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={comparisonChartData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" />
+                <YAxis yAxisId="left" label={{ value: 'Value', angle: -90, position: 'insideLeft' }} />
+                <Tooltip />
+                <Legend />
+                <Bar yAxisId="left" dataKey="real" fill="#8884d8" name="Real Data Avg" />
+                <Bar yAxisId="left" dataKey="simulated" fill="#82ca9d" name="Simulation" />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+
+          <div className={styles.chartSection}>
+            <h4>Simulation Trajectory Over Time</h4>
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart data={comparisonMetrics.timeSeries}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="year" />
+                <YAxis yAxisId="left" label={{ value: 'Profit ($M)', angle: -90, position: 'insideLeft' }} />
+                <YAxis yAxisId="right" orientation="right" label={{ value: 'Risk', angle: 90, position: 'insideRight' }} />
+                <Tooltip />
+                <Legend />
+                <Line yAxisId="left" type="monotone" dataKey="accumulated_profit" stroke="#8884d8" name="Profit" strokeWidth={2} />
+                <Line yAxisId="right" type="monotone" dataKey="systems_at_risk" stroke="#ff7300" name="Risk" strokeWidth={2} />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+
+          <div className={styles.parametersBox}>
+            <h4>Simulation Configuration</h4>
+            <p><strong>Scenario:</strong> {selectedSim.parameters.scenario}</p>
+            <p><strong>Agent Collaboration:</strong> {selectedSim.parameters.agent_collaboration}</p>
+            <p><strong>Risk Tolerance:</strong> {(selectedSim.parameters.risk_tolerance * 100).toFixed(0)}%</p>
+            <p><strong>Time Period:</strong> {selectedSim.parameters.num_years} years</p>
+            {selectedSim.results.summary.data_source && (
+              <p><strong>Data Source:</strong> {selectedSim.results.summary.data_source}</p>
+            )}
+          </div>
         </div>
       )}
     </div>
