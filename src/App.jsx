@@ -13,12 +13,7 @@ function App() {
     let url;
     if (import.meta.env.VITE_API_URL) {
       url = import.meta.env.VITE_API_URL;
-    } else if (window.location.hostname === 'agentic-research-frontend.onrender.com') {
-      url = 'https://agentic-research-backend.onrender.com';
-    } else {
-      url = 'http://localhost:5001';
-    }
-    // Remove trailing slash to prevent double slashes in URLs
+    } 
     return url.replace(/\/$/, '');
   };
 
@@ -45,7 +40,7 @@ function App() {
       <header className={styles.header}>
         <div className={styles.headerContent}>
           <div className={styles.branding}>
-            <h1>🤖 Agentic Research Dashboard</h1>
+            <h1>Agentic Research Dashboard</h1>
             <p>Multi-Agent Cyber Risk Simulation & Analysis</p>
           </div>
           
@@ -53,9 +48,9 @@ function App() {
             {checkingHealth ? (
               <span className={styles.checking}>Checking backend...</span>
             ) : backendHealth ? (
-              <span className={styles.healthy}>✓ Backend Connected</span>
+              <span className={styles.healthy}>Backend Connected</span>
             ) : (
-              <span className={styles.unhealthy}>✗ Backend Offline</span>
+              <span className={styles.unhealthy}>Backend Offline</span>
             )}
           </div>
         </div>
@@ -67,19 +62,19 @@ function App() {
           >
             Simulations
           </button>
-          <button
+          {/* <button
             className={`${styles.navBtn} ${activeTab === 'data' ? styles.active : ''}`}
             onClick={() => setActiveTab('data')}
           >
             Data Analysis
-          </button>
+          </button> */}
         </nav>
       </header>
 
       <main className={styles.main}>
         {!backendHealth && !checkingHealth && (
           <div className={styles.warningBanner}>
-            <strong>⚠️ Backend Connection Failed</strong> - The API server is not responding. 
+            <strong>Backend Connection Failed</strong> - The API server is not responding. 
             Make sure the backend is running on {import.meta.env.VITE_API_URL || 'http://localhost:5001'}
           </div>
         )}
