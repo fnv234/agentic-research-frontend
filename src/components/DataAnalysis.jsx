@@ -29,6 +29,8 @@ export function DataAnalysis() {
       const response = await fetch(`${API_BASE}/api/runs/real`);
       if (response.ok) {
         const data = await response.json();
+        console.log('API Response:', data);
+        console.log('Data count:', data.data?.length);
         setRealData(data.data || []);
       } else {
         setError('Failed to load real data');
@@ -42,7 +44,13 @@ export function DataAnalysis() {
   };
 
   const analyzeData = () => {
-    if (!realData || realData.length === 0) return;
+    console.log('analyzeData called with:', { realDataLength: realData?.length, filterLevel, filterRansomware, filterPayRansom });
+    if (!realData || realData.length === 0) {
+      console.log('No data to analyze');
+      return;
+    }
+
+    console.log('First data item:', realData[0]);
 
     let filtered = realData;
 
@@ -57,7 +65,10 @@ export function DataAnalysis() {
       filtered = filtered.filter(r => r['Pay Ransom'] === parseInt(filterPayRansom));
     }
 
+    console.log(`Filtered to ${filtered.length} items from ${realData.length}`);
+
     if (filtered.length === 0) {
+      console.log('No data after filtering');
       setStats(null);
       return;
     }
@@ -160,6 +171,7 @@ export function DataAnalysis() {
     statsData.payRansomComparison = payRansomComparison;
     statsData.profitDistribution = profitDistribution;
 
+    console.log('Setting stats:', statsData);
     setStats(statsData);
   };
 
