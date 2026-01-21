@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { ComparisonView } from './components/ComparisonView';
-import { AnalyticsDashboard } from './components/AnalyticsDashboard';
 import { SimulationRunner } from './components/SimulationRunner';
+import { DataAnalysis } from './components/DataAnalysis';
 import styles from './App.module.css';
 
 function App() {
-  const [activeTab, setActiveTab] = useState('analytics');
+  const [activeTab, setActiveTab] = useState('simulations');
   const [backendHealth, setBackendHealth] = useState(null);
   const [checkingHealth, setCheckingHealth] = useState(true);
 
@@ -47,7 +46,7 @@ function App() {
         <div className={styles.headerContent}>
           <div className={styles.branding}>
             <h1>🤖 Agentic Research Dashboard</h1>
-            <p>Bot Comparison & Analytics Platform</p>
+            <p>Multi-Agent Cyber Risk Simulation & Analysis</p>
           </div>
           
           <div className={styles.healthStatus}>
@@ -63,22 +62,16 @@ function App() {
 
         <nav className={styles.nav}>
           <button
-            className={`${styles.navBtn} ${activeTab === 'analytics' ? styles.active : ''}`}
-            onClick={() => setActiveTab('analytics')}
-          >
-            📊 Analytics
-          </button>
-          <button
-            className={`${styles.navBtn} ${activeTab === 'comparison' ? styles.active : ''}`}
-            onClick={() => setActiveTab('comparison')}
-          >
-            ⚖️ Comparisons
-          </button>
-          <button
             className={`${styles.navBtn} ${activeTab === 'simulations' ? styles.active : ''}`}
             onClick={() => setActiveTab('simulations')}
           >
-            🚀 Simulations
+            Simulations
+          </button>
+          <button
+            className={`${styles.navBtn} ${activeTab === 'data' ? styles.active : ''}`}
+            onClick={() => setActiveTab('data')}
+          >
+            Data Analysis
           </button>
         </nav>
       </header>
@@ -91,11 +84,9 @@ function App() {
           </div>
         )}
         <div className={styles.content}>
-          {activeTab === 'analytics' && <AnalyticsDashboard />}
-          {activeTab === 'comparison' && <ComparisonView />}
           {activeTab === 'simulations' && <SimulationRunner />}
+          {activeTab === 'data' && <DataAnalysis />}
         </div>
-  );
       </main>
     </div>
   );
