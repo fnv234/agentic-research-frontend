@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { useScenarios, useSimulator } from '../hooks/useAPI';
 import styles from './SimulationRunner.module.css';
+import { AgentPerspectives } from './Agents';
 
 export function SimulationRunner() {
   const { scenarios, loading: scenariosLoading, fetchScenarios } = useScenarios();
@@ -100,6 +101,7 @@ export function SimulationRunner() {
 
       {currentSimulation && (
         <div className={styles.resultsContainer}>
+          
           <h3>Simulation Results</h3>
           
           <div className={styles.summaryCards}>
@@ -183,6 +185,15 @@ export function SimulationRunner() {
               </LineChart>
             </ResponsiveContainer>
           </div>
+
+          {currentSimulation.results.agent_perspectives && currentSimulation.results.agent_perspectives.length > 0 ? (
+            <AgentPerspectives 
+              simulation={currentSimulation.results} 
+              scenario={selectedScenario}
+            />
+          ) : (
+            <div className={styles.noData}>No agent data available</div>
+          )}
 
           <div className={styles.parametersBox}>
             <h4>Simulation Parameters</h4>
