@@ -1,0 +1,264 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 2em;
+  padding: 1em;
+}
+
+.filterSection {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1em;
+  background: #1a1a1a;
+  padding: 1.5em;
+  border-radius: 8px;
+  border: 1px solid #404040;
+}
+
+.filterGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+}
+
+.filterGroup label {
+  font-weight: 500;
+  color: #aaa;
+  font-size: 0.9em;
+}
+
+.filterGroup select {
+  padding: 0.5em;
+}
+
+.loading,
+.error,
+.noData {
+  padding: 2em;
+  text-align: center;
+  font-size: 1.1em;
+}
+
+.error {
+  color: #ff6b6b;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1em;
+}
+
+.statCard {
+  background: #1a1a1a;
+  padding: 1.5em;
+  border-radius: 8px;
+  border-left: 4px solid #646cff;
+  transition: all 0.3s ease;
+}
+
+.statCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(100, 108, 255, 0.2);
+}
+
+.statCard h3 {
+  margin: 0 0 0.5em 0;
+  font-size: 0.95em;
+  color: #aaa;
+  font-weight: 500;
+}
+
+.value {
+  margin: 0;
+  font-size: 2em;
+  font-weight: 700;
+}
+
+.statCard.primary {
+  border-left-color: #646cff;
+}
+
+.statCard.primary .value {
+  color: #646cff;
+}
+
+.statCard.success {
+  border-left-color: #51cf66;
+}
+
+.statCard.success .value {
+  color: #51cf66;
+}
+
+.statCard.warning {
+  border-left-color: #ffa94d;
+}
+
+.statCard.warning .value {
+  color: #ffa94d;
+}
+
+.statCard.danger {
+  border-left-color: #ff6b6b;
+}
+
+.statCard.danger .value {
+  color: #ff6b6b;
+}
+
+.section {
+  background: #1a1a1a;
+  padding: 1.5em;
+  border-radius: 8px;
+  border: 1px solid #404040;
+}
+
+.section h3 {
+  margin-top: 0;
+  margin-bottom: 1em;
+  padding-bottom: 0.5em;
+  border-bottom: 1px solid #404040;
+}
+
+.tableWrapper {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+table thead tr {
+  background-color: #242424;
+  border-bottom: 2px solid #404040;
+}
+
+table th {
+  padding: 0.75em;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.9em;
+}
+
+table td {
+  padding: 0.75em;
+  border-bottom: 1px solid #404040;
+}
+
+table tbody tr:hover {
+  background-color: #2d2d2d;
+}
+
+.impactBadge {
+  padding: 0.25em 0.75em;
+  border-radius: 20px;
+  font-size: 0.85em;
+  font-weight: 600;
+}
+
+.impactBadge.high {
+  background: rgba(255, 107, 107, 0.15);
+  color: #ff6b6b;
+}
+
+.impactBadge.medium {
+  background: rgba(255, 152, 0, 0.15);
+  color: #ff9800;
+}
+
+.impactBadge.low {
+  background: rgba(81, 207, 102, 0.15);
+  color: #51cf66;
+}
+
+.performanceDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5em;
+}
+
+.detail {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+}
+
+.label {
+  font-weight: 500;
+  color: #aaa;
+}
+
+.progressBar {
+  position: relative;
+  height: 24px;
+  background: #242424;
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid #404040;
+}
+
+.progress {
+  height: 100%;
+  background: linear-gradient(90deg, #51cf66, #37b24d);
+  transition: width 0.5s ease;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 0.5em;
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.85em;
+}
+
+.percentage {
+  text-align: right;
+  font-weight: 600;
+  color: #51cf66;
+}
+
+.distribution {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75em;
+}
+
+.distributionItem {
+  display: flex;
+  align-items: center;
+  gap: 1em;
+}
+
+.distributionItem span:first-child {
+  flex: 0 0 120px;
+  font-size: 0.9em;
+}
+
+.bar {
+  flex: 1;
+  height: 16px;
+  border-radius: 4px;
+  min-width: 40px;
+}
+
+@media (prefers-color-scheme: light) {
+  .filterSection,
+  .section,
+  .statCard {
+    background: #f5f5f5;
+    border-color: #e0e0e0;
+  }
+
+  table thead tr {
+    background-color: #f0f0f0;
+  }
+
+  table tbody tr:hover {
+    background-color: #fafafa;
+  }
+
+  .progressBar {
+    background: #efefef;
+  }
+}

@@ -1,0 +1,201 @@
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: #242424;
+}
+
+.header {
+  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+  border-bottom: 1px solid #404040;
+  padding: 0;
+}
+
+.headerContent {
+  padding: 1.5em;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #404040;
+}
+
+.branding h1 {
+  margin: 0;
+  font-size: 1.8em;
+  background: linear-gradient(90deg, #646cff, #a78bfa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.branding p {
+  margin: 0.25em 0 0 0;
+  color: #888;
+  font-size: 0.95em;
+}
+
+.healthStatus {
+  font-weight: 600;
+  padding: 0.6em 1.2em;
+  border-radius: 20px;
+  background: #1a1a1a;
+  border: 1px solid #404040;
+}
+
+.healthy {
+  color: #51cf66;
+}
+
+.unhealthy {
+  color: #ff6b6b;
+}
+
+.checking {
+  color: #ffa94d;
+}
+
+.nav {
+  display: flex;
+  padding: 0;
+  background: #1a1a1a;
+}
+
+.navBtn {
+  flex: 1;
+  padding: 1em;
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  color: #888;
+  font-size: 1em;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-radius: 0;
+}
+
+.navBtn:hover {
+  color: #aaa;
+  background: rgba(100, 108, 255, 0.05);
+}
+
+.navBtn.active {
+  color: #646cff;
+  border-bottom-color: #646cff;
+  background: rgba(100, 108, 255, 0.08);
+}
+
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+}
+
+.warningBanner {
+  background: rgba(255, 152, 0, 0.15);
+  border-top: 1px solid rgba(255, 152, 0, 0.3);
+  border-bottom: 1px solid rgba(255, 152, 0, 0.3);
+  padding: 1em;
+  text-align: center;
+  color: #ffa94d;
+  font-weight: 500;
+}
+
+.content {
+  flex: 1;
+  overflow: auto;
+}
+
+.footer {
+  background: #1a1a1a;
+  border-top: 1px solid #404040;
+  padding: 1.5em;
+  text-align: center;
+  color: #666;
+  font-size: 0.9em;
+}
+
+.footer p {
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .headerContent {
+    flex-direction: column;
+    gap: 1em;
+    text-align: center;
+  }
+
+  .healthStatus {
+    order: -1;
+  }
+
+  .nav {
+    flex-direction: column;
+  }
+
+  .navBtn {
+    border-bottom: 2px solid transparent;
+    border-right: 3px solid transparent;
+  }
+
+  .navBtn.active {
+    border-bottom: 2px solid transparent;
+    border-right-color: #646cff;
+  }
+
+  .branding h1 {
+    font-size: 1.4em;
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  .app {
+    background: #ffffff;
+  }
+
+  .header {
+    background: linear-gradient(135deg, #f5f5f5 0%, #ffffff 100%);
+    border-bottom-color: #e0e0e0;
+  }
+
+  .headerContent {
+    border-bottom-color: #e0e0e0;
+  }
+
+  .healthStatus {
+    background: #f9f9f9;
+    border-color: #e0e0e0;
+  }
+
+  .nav {
+    background: #ffffff;
+  }
+
+  .navBtn {
+    color: #666;
+    border-bottom-color: transparent;
+  }
+
+  .navBtn:hover {
+    background: rgba(100, 108, 255, 0.05);
+    color: #333;
+  }
+
+  .navBtn.active {
+    color: #646cff;
+    border-bottom-color: #646cff;
+  }
+
+  .warningBanner {
+    background: rgba(255, 152, 0, 0.1);
+    border-color: rgba(255, 152, 0, 0.2);
+  }
+
+  .footer {
+    background: #f5f5f5;
+    border-top-color: #e0e0e0;
+    color: #999;
+  }
+}
