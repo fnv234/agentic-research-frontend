@@ -29,6 +29,11 @@ export function DataAnalysis() {
       const response = await fetch(`${API_BASE}/api/runs/real`);
       if (response.ok) {
         const data = await response.json();
+        console.log('Loaded data:', data);
+        console.log('Data array length:', data.data?.length);
+        if (data.data && data.data.length > 0) {
+          console.log('First item:', data.data[0]);
+        }
         setRealData(data.data || []);
       } else {
         setError('Failed to load real data');
@@ -42,22 +47,32 @@ export function DataAnalysis() {
   };
 
   const analyzeData = () => {
-    if (!realData || realData.length === 0) return;
+    if (!realData || realData.length === 0) {
+      console.warn('No real data to analyze');
+      return;
+    }
+
+    console.log('Analyzing data with filters:', { filterLevel, filterRansomware, filterPayRansom });
+    console.log('Sample data item:', realData[0]);
 
     let filtered = realData;
 
     // Apply filters
     if (filterLevel !== 'all') {
       filtered = filtered.filter(r => r.Level === parseInt(filterLevel));
+      console.log(`After Level filter: ${filtered.length} items`);
     }
     if (filterRansomware !== 'all') {
       filtered = filtered.filter(r => r.Ransomware === parseInt(filterRansomware));
+      console.log(`After Ransomware filter: ${filtered.length} items`);
     }
     if (filterPayRansom !== 'all') {
       filtered = filtered.filter(r => r['Pay Ransom'] === parseInt(filterPayRansom));
+      console.log(`After PayRansom filter: ${filtered.length} items`);
     }
 
     if (filtered.length === 0) {
+      console.warn('No data after filtering');
       setStats(null);
       return;
     }
