@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ComparisonView } from './components/ComparisonView';
 import { AnalyticsDashboard } from './components/AnalyticsDashboard';
 import { ThresholdManager } from './components/ThresholdManager';
+import { SimulationRunner } from './components/SimulationRunner';
 import styles from './App.module.css';
 
 function App() {
@@ -75,6 +76,12 @@ function App() {
             ⚖️ Comparisons
           </button>
           <button
+            className={`${styles.navBtn} ${activeTab === 'simulations' ? styles.active : ''}`}
+            onClick={() => setActiveTab('simulations')}
+          >
+            🚀 Simulations
+          </button>
+          <button
             className={`${styles.navBtn} ${activeTab === 'thresholds' ? styles.active : ''}`}
             onClick={() => setActiveTab('thresholds')}
           >
@@ -94,6 +101,7 @@ function App() {
         <div className={styles.content}>
           {activeTab === 'analytics' && <AnalyticsDashboard />}
           {activeTab === 'comparison' && <ComparisonView />}
+          {activeTab === 'simulations' && <SimulationRunner />}
           {activeTab === 'thresholds' && <ThresholdManager />}
         </div>
       </main>

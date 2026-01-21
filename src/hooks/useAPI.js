@@ -125,7 +125,9 @@ export function useBots() {
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       
       const data = await response.json();
-      setBots(data.agents || []);
+      // Backend returns an array directly, not wrapped in an object
+      const botList = Array.isArray(data) ? data : (data.agents || []);
+      setBots(botList);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -246,5 +248,74 @@ export function useSimulations() {
     fetchRuns,
     fetchRealData,
     compareSimulation
+  };
+}
+
+export function useScenarios() {
+  const [scenarios, setScenarios] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const fetchScenarios = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(`${API_BASE}/api/scenarios`);
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      
+      const data = await response.json();
+      setScenarios(data.scenarios || []);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  return {
+    scenarios,
+    loading,
+    error,
+    fetchScenarios
+  };
+}
+
+export function useSimulator() {
+  const [simulations, setSimulations] = useState([]);
+  const [currentSimulation, setCurrentSimulation] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const runSimulation = useCallback(async (params) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(`${API_BASE}/api/simulate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(params)
+      });
+      
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      
+      const data = await response.json();
+      setCurrentSimulation(data);
+      setSimulations([...simulations, data]);
+      return data;
+    } catch (err) {
+      setError(err.message);
+      return null;
+    } finally {
+      setLoading(false);
+    }
+  }, [simulations]);
+
+  return {
+    simulations,
+    currentSimulation,
+    loading,
+    error,
+    runSimulation,
+    setCurrentSimulation
   };
 }
