@@ -11,15 +11,16 @@ function App() {
 
   // Determine API URL based on environment
   const getApiUrl = () => {
+    let url;
     if (import.meta.env.VITE_API_URL) {
-      return import.meta.env.VITE_API_URL;
+      url = import.meta.env.VITE_API_URL;
+    } else if (window.location.hostname === 'agentic-research-frontend.onrender.com') {
+      url = 'https://agentic-research-backend.onrender.com';
+    } else {
+      url = 'http://localhost:5001';
     }
-    // Fallback to production backend if available
-    if (window.location.hostname === 'agentic-research-frontend.onrender.com') {
-      return 'https://agentic-research-backend.onrender.com';
-    }
-    // Local development
-    return 'http://localhost:5001';
+    // Remove trailing slash to prevent double slashes in URLs
+    return url.replace(/\/$/, '');
   };
 
   const apiUrl = getApiUrl();
