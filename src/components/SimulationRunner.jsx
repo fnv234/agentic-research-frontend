@@ -137,7 +137,7 @@ export function SimulationRunner() {
                 <Line 
                   type="monotone" 
                   dataKey="accumulated_profit" 
-                  stroke="#8884d8" 
+                  stroke="#64ff88" 
                   name="Accumulated Profit"
                   isAnimationActive={false}
                 />

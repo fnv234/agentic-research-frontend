@@ -53,7 +53,7 @@
   background: #1a1a1a;
   padding: 1.5em;
   border-radius: 8px;
-  border-left: 4px solid #646cff;
+  border-left: 4px solid #64ff88;
   transition: all 0.3s ease;
 }
 
@@ -76,11 +76,11 @@
 }
 
 .statCard.primary {
-  border-left-color: #646cff;
+  border-left-color: #64ff88;
 }
 
 .statCard.primary .value {
-  color: #646cff;
+  color: #64ff88;
 }
 
 .statCard.success {

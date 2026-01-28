@@ -218,8 +218,8 @@ export function ComparisonView() {
                 <YAxis yAxisId="left" label={{ value: 'Value', angle: -90, position: 'insideLeft' }} />
                 <Tooltip />
                 <Legend />
-                <Bar yAxisId="left" dataKey="real" fill="#8884d8" name="Real Data Avg" />
-                <Bar yAxisId="left" dataKey="simulated" fill="#82ca9d" name="Simulation" />
+                <Bar yAxisId="left" dataKey="real" fill="#64ff88" name="Real Data Avg" />
+                <Bar yAxisId="left" dataKey="simulated" fill="#4d8cff" name="Simulation" />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -234,7 +234,7 @@ export function ComparisonView() {
                 <YAxis yAxisId="right" orientation="right" label={{ value: 'Risk', angle: 90, position: 'insideRight' }} />
                 <Tooltip />
                 <Legend />
-                <Line yAxisId="left" type="monotone" dataKey="accumulated_profit" stroke="#8884d8" name="Profit" strokeWidth={2} />
+                <Line yAxisId="left" type="monotone" dataKey="accumulated_profit" stroke="#64ff88" name="Profit" strokeWidth={2} />
                 <Line yAxisId="right" type="monotone" dataKey="systems_at_risk" stroke="#ff7300" name="Risk" strokeWidth={2} />
               </LineChart>
             </ResponsiveContainer>

@@ -34,7 +34,7 @@ export function AgentPerspectives({ simulation, scenario }) {
             <PolarGrid />
             <PolarAngleAxis dataKey="name" />
             <PolarRadiusAxis angle={90} domain={[0, 100]} />
-            <Radar name="Priority" dataKey="priority" stroke="#8884d8" fill="#8884d8" fillOpacity={0.6} />
+            <Radar name="Priority" dataKey="priority" stroke="#64ff88" fill="#64ff88" fillOpacity={0.4} />
             <Tooltip />
           </RadarChart>
         </ResponsiveContainer>

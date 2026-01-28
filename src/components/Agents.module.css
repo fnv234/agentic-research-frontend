@@ -40,8 +40,8 @@
 }
 
 .agentCard:hover {
-  border-color: #8884d8;
-  box-shadow: 0 4px 12px rgba(136, 132, 216, 0.2);
+  border-color: #64ff88;
+  box-shadow: 0 4px 12px rgba(100, 255, 136, 0.2);
 }
 
 .agentHeader {
@@ -60,8 +60,8 @@
 }
 
 .priority {
-  background: #8884d8;
-  color: white;
+  background: #64ff88;
+  color: #1a1a1a;
   padding: 4px 12px;
   border-radius: 12px;
   font-size: 12px;
@@ -119,7 +119,7 @@
 
 .recommendations {
   background: #f5f5f5;
-  border-left: 4px solid #8884d8;
+  border-left: 4px solid #64ff88;
   padding: 16px;
   border-radius: 4px;
   list-style: none;
@@ -137,7 +137,7 @@
   content: "→";
   position: absolute;
   left: 0;
-  color: #8884d8;
+  color: #64ff88;
   font-weight: bold;
 }
 

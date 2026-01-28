@@ -39,14 +39,14 @@
 }
 
 .runCard:hover {
-  border-color: #646cff;
-  box-shadow: 0 0 10px rgba(100, 108, 255, 0.3);
+  border-color: #64ff88;
+  box-shadow: 0 0 10px rgba(100, 255, 136, 0.3);
 }
 
 .runCard.selected {
-  border-color: #646cff;
+  border-color: #64ff88;
   background: #2d2d3d;
-  box-shadow: 0 0 15px rgba(100, 108, 255, 0.5);
+  box-shadow: 0 0 15px rgba(100, 255, 136, 0.5);
 }
 
 .runCard h4 {
@@ -175,7 +175,7 @@ table tbody tr:hover {
   padding: 0.75em;
   background: #1a1a1a;
   border-radius: 4px;
-  border-left: 3px solid #646cff;
+  border-left: 3px solid #64ff88;
 }
 
 .label {
@@ -225,6 +225,6 @@ table tbody tr:hover {
   }
 
   .metric {
-    border-left-color: #646cff;
+    border-left-color: #64ff88;
   }
 }

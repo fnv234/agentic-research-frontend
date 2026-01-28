@@ -85,8 +85,8 @@
 .formGroup select:focus,
 .formGroup textarea:focus {
   outline: none;
-  border-color: #646cff;
-  box-shadow: 0 0 0 2px rgba(100, 108, 255, 0.1);
+  border-color: #64ff88;
+  box-shadow: 0 0 0 2px rgba(100, 255, 136, 0.1);
 }
 
 .formButtons {
@@ -107,8 +107,8 @@
 }
 
 .submitBtn {
-  background: #646cff;
-  color: white;
+  background: #64ff88;
+  color: #1a1a1a;
 }
 
 .submitBtn:hover {
@@ -197,9 +197,9 @@ table tbody tr:hover {
 
 .targetValue {
   font-weight: 600;
-  color: #646cff;
+  color: #64ff88;
   padding: 0.25em 0.5em;
-  background: rgba(100, 108, 255, 0.1);
+  background: rgba(100, 255, 136, 0.1);
   border-radius: 4px;
 }
 
@@ -224,8 +224,8 @@ table tbody tr:hover {
 }
 
 .editBtn {
-  background: #646cff;
-  color: white;
+  background: #64ff88;
+  color: #1a1a1a;
 }
 
 .editBtn:hover {
