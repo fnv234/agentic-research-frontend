@@ -8,7 +8,6 @@ function App() {
   const [backendHealth, setBackendHealth] = useState(null);
   const [checkingHealth, setCheckingHealth] = useState(true);
 
-  // Determine API URL based on environment
   const getApiUrl = () => {
     let url;
     if (import.meta.env.VITE_API_URL) {
@@ -75,7 +74,7 @@ function App() {
         {!backendHealth && !checkingHealth && (
           <div className={styles.warningBanner}>
             <strong>Backend Connection Failed</strong> - The API server is not responding. 
-            Make sure the backend is running on {import.meta.env.VITE_API_URL || 'http://localhost:5001'}
+            Make sure the backend is running on {import.meta.env.VITE_API_URL}
           </div>
         )}
         <div className={styles.content}>

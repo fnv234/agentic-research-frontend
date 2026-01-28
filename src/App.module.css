@@ -22,7 +22,7 @@
 .branding h1 {
   margin: 0;
   font-size: 1.8em;
-  background: linear-gradient(90deg, #646cff, #a78bfa);
+  background: linear-gradient(90deg, #64ff80, #8bfac1);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -80,8 +80,8 @@
 }
 
 .navBtn.active {
-  color: #646cff;
-  border-bottom-color: #646cff;
+  color: #64ff88;
+  border-bottom-color: #60db72;
   background: rgba(100, 108, 255, 0.08);
 }
 
@@ -142,7 +142,7 @@
 
   .navBtn.active {
     border-bottom: 2px solid transparent;
-    border-right-color: #646cff;
+    border-right-color: #64ff88;
   }
 
   .branding h1 {
@@ -184,8 +184,8 @@
   }
 
   .navBtn.active {
-    color: #646cff;
-    border-bottom-color: #646cff;
+    color: #64ff88;
+    border-bottom-color: #64ff88;
   }
 
   .warningBanner {

@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
 
-// Normalize API URL - remove trailing slash if present
 const normalizeUrl = (url) => url.replace(/\/$/, '');
 const API_BASE = normalizeUrl(import.meta.env.VITE_API_URL || 'http://localhost:5001');
 
