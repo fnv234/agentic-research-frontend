@@ -1,123 +1,4 @@
-# Frontend Architecture & Component Diagram
-
-## Application Structure
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                                                             │
-│                    AGENTIC RESEARCH FRONTEND                │
-│                                                             │
-├─────────────────────────────────────────────────────────────┤
-│                          Header                             │
-│  [Logo] Agentic Research Dashboard    [Health Status ✓]    │
-├─────────────────────────────────────────────────────────────┤
-│                      Navigation Tabs                        │
-│  [📊 Analytics] [⚖️ Comparisons] [⚙️ Thresholds]           │
-├─────────────────────────────────────────────────────────────┤
-│                                                             │
-│                    ACTIVE TAB CONTENT                       │
-│                                                             │
-│  ┌──────────────────────────────────────────────────────┐  │
-│  │                                                      │  │
-│  │     Component based on active tab:                  │  │
-│  │     - AnalyticsDashboard                            │  │
-│  │     - ComparisonView                                │  │
-│  │     - ThresholdManager                              │  │
-│  │                                                      │  │
-│  └──────────────────────────────────────────────────────┘  │
-│                                                             │
-├─────────────────────────────────────────────────────────────┤
-│                          Footer                             │
-│                © 2024 Agentic Research                      │
-└─────────────────────────────────────────────────────────────┘
-```
-
-## Component Hierarchy
-
-```
-App.jsx
-├── Header
-│   ├── Branding
-│   │   ├── Logo
-│   │   └── Title
-│   └── Health Status Indicator
-│
-├── Navigation (Tabs)
-│   ├── Analytics Button
-│   ├── Comparisons Button
-│   └── Thresholds Button
-│
-├── Main Content Area
-│   ├── AnalyticsDashboard (Tab 1)
-│   │   ├── Filter Controls
-│   │   │   ├── Agent Select
-│   │   │   └── Time Period Select
-│   │   │
-│   │   ├── Statistics Cards Grid
-│   │   │   ├── Total Runs
-│   │   │   ├── Pass Rate
-│   │   │   ├── On Target
-│   │   │   ├── Below Min
-│   │   │   ├── Above Max
-│   │   │   └── Off Target
-│   │   │
-│   │   ├── Failed KPIs Table
-│   │   │   ├── Agent Column
-│   │   │   ├── KPI Column
-│   │   │   ├── Failed Runs
-│   │   │   ├── Failure Rate
-│   │   │   └── Impact Badge
-│   │   │
-│   │   └── Performance Summary
-│   │       ├── Progress Bar
-│   │       └── Distribution Charts
-│   │
-│   ├── ComparisonView (Tab 2)
-│   │   ├── Run Selection Section
-│   │   │   ├── Run Cards Grid
-│   │   │   │   ├── Run Name
-│   │   │   │   ├── Timestamp
-│   │   │   │   ├── Status Badge
-│   │   │   │   └── Compare Button
-│   │   │   └── [Compare Button]
-│   │   │
-│   │   ├── Comparison Results
-│   │   │   └── Agent Comparison Tables
-│   │   │       ├── Metric Name
-│   │   │       ├── Simulated Value
-│   │   │       ├── Real Value
-│   │   │       ├── Variance
-│   │   │       ├── Variance %
-│   │   │       └── Status Badge
-│   │   │
-│   │   └── Real Data Display
-│   │       └── Real Data Cards
-│   │           └── Metrics Grid
-│   │
-│   └── ThresholdManager (Tab 3)
-│       ├── Form Section
-│       │   ├── Agent Select
-│       │   ├── KPI Name Input
-│       │   ├── Min/Target/Max Inputs
-│       │   ├── Description Input
-│       │   └── Submit Button
-│       │
-│       └── Threshold List Section
-│           ├── Agent Filter
-│           ├── Thresholds Table
-│           │   ├── Agent Column
-│           │   ├── KPI Column
-│           │   ├── Min Column
-│           │   ├── Target Column
-│           │   ├── Max Column
-│           │   ├── Description Column
-│           │   ├── Created Date
-│           │   └── Actions (Edit/Delete)
-│           └── [Empty State: No thresholds]
-│
-└── Footer
-    └── Copyright & Version
-```
+# architecture information
 
 ## Data Flow
 
@@ -224,7 +105,7 @@ App.jsx
 ┌────────────────────────────────────────────────────┐
 │          BACKEND API ENDPOINTS                     │
 │                                                    │
-│  Base URL: http://localhost:5001                  │
+│  Base URL: https://agentic-research-backend.onrender.com                  │
 │                                                    │
 │  /api/bots                                        │
 │  /api/thresholds                                  │
@@ -264,63 +145,6 @@ Effect Triggers (useEffect):
 └─ On tab change: load tab-specific data
 ```
 
-## Styling Architecture
-
-```
-├─ Global Styles (index.css)
-│  ├─ CSS Variables (colors, spacing)
-│  ├─ Base element styles
-│  ├─ Dark theme (default)
-│  └─ Light theme (@media prefers-color-scheme)
-│
-├─ Component Styles (*.module.css)
-│  ├─ App.module.css
-│  ├─ AnalyticsDashboard.module.css
-│  ├─ ComparisonView.module.css
-│  └─ ThresholdManager.module.css
-│
-└─ Theme System
-   ├─ Dark Colors
-   │  ├─ Background: #242424
-   │  ├─ Card: #1a1a1a
-   │  ├─ Border: #404040
-   │  └─ Text: rgba(255, 255, 255, 0.87)
-   │
-   └─ Light Colors
-      ├─ Background: #ffffff
-      ├─ Card: #f5f5f5
-      ├─ Border: #e0e0e0
-      └─ Text: #213547
-```
-
-## Responsive Design Breakpoints
-
-```
-Mobile First Approach:
-
-┌──────────────────────────────────────────┐
-│ Default (320px - 767px)                 │
-│ - Single column layout                  │
-│ - Stacked tabs (horizontal scroll)      │
-│ - Full-width cards                      │
-└──────────────────────────────────────────┘
-                   │
-                   ▼ 768px
-┌──────────────────────────────────────────┐
-│ Tablet (768px - 1023px)                 │
-│ - Two column layout                     │
-│ - Side-by-side components               │
-│ - Grid layouts                          │
-└──────────────────────────────────────────┘
-                   │
-                   ▼ 1024px
-┌──────────────────────────────────────────┐
-│ Desktop (1024px+)                       │
-│ - Multi-column layouts                  │
-│ - Optimized spacing                     │
-│ - Advanced visualizations               │
-└──────────────────────────────────────────┘
-```
 
 ## Performance Optimizations
 
