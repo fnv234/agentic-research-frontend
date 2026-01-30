@@ -2,11 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { useStatistics, useBots } from '../hooks/useAPI';
 import styles from './AnalyticsDashboard.module.css';
 
+const API_BASE = (import.meta.env.VITE_API_URL || 'http://localhost:5001').replace(/\/$/, '');
+
 export function AnalyticsDashboard() {
   const { statistics, loading, error, fetchStatistics } = useStatistics();
   const { bots, fetchBots } = useBots();
   const [selectedAgent, setSelectedAgent] = useState('');
   const [days, setDays] = useState(30);
+  const [runStats, setRunStats] = useState(null);
 
   useEffect(() => {
     fetchBots();
@@ -16,24 +19,62 @@ export function AnalyticsDashboard() {
     });
   }, [selectedAgent, days, fetchStatistics, fetchBots]);
 
+  useEffect(() => {
+    fetch(`${API_BASE}/api/statistics`)
+      .then((res) => res.ok ? res.json() : null)
+      .then((data) => {
+        if (data?.success && data?.data) setRunStats(data.data);
+      })
+      .catch(() => {});
+  }, []);
+
   if (loading) return <div className={styles.loading}>Loading analytics...</div>;
   if (error) return <div className={styles.error}>Error: {error}</div>;
   if (!statistics) return <div className={styles.noData}>No statistics available</div>;
 
+  const hasThresholdRuns = statistics.total_runs > 0;
   const passRatePercent = (statistics.pass_rate * 100).toFixed(1);
 
   const statCards = [
-    { label: 'Total Runs', value: statistics.total_runs, className: 'primary' },
+    { label: 'Total Runs', value: statistics.total_runs ?? 0, className: 'primary' },
     { label: 'Pass Rate', value: `${passRatePercent}%`, className: 'success' },
-    { label: 'On Target', value: statistics.on_target_count, className: 'success' },
-    { label: 'Below Min', value: statistics.below_min_count || 0, className: 'warning' },
-    { label: 'Above Max', value: statistics.above_max_count || 0, className: 'warning' },
-    { label: 'Off Target', value: statistics.off_target_count || 0, className: 'danger' }
+    { label: 'On Target', value: statistics.on_target_count ?? 0, className: 'success' },
+    { label: 'Below Min', value: statistics.below_min_count ?? 0, className: 'warning' },
+    { label: 'Above Max', value: statistics.above_max_count ?? 0, className: 'warning' },
+    { label: 'Off Target', value: statistics.off_target_count ?? 0, className: 'danger' }
   ];
 
   return (
     <div className={styles.container}>
       <h2>Analytics Dashboard</h2>
+
+      {!hasThresholdRuns && (
+        <div className={styles.section}>
+          <p className={styles.noData}>
+            No threshold runs recorded yet. Run simulations and log results against thresholds to see compliance statistics here. Below: run data overview when available.
+          </p>
+        </div>
+      )}
+
+      {runStats && (runStats.real_data?.count !== undefined || runStats.bot_data?.count !== undefined) && (
+        <div className={styles.section}>
+          <h3>Run Data Overview</h3>
+          <div className={styles.statsGrid}>
+            {runStats.real_data?.count != null && (
+              <div className={`${styles.statCard} ${styles.primary}`}>
+                <h3>Real Data Runs</h3>
+                <p className={styles.value}>{runStats.real_data.count}</p>
+              </div>
+            )}
+            {runStats.bot_data?.count != null && (
+              <div className={`${styles.statCard} ${styles.primary}`}>
+                <h3>Bot/Simulation Runs</h3>
+                <p className={styles.value}>{runStats.bot_data.count}</p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       <div className={styles.filterSection}>
         <div className={styles.filterGroup}>
@@ -122,31 +163,31 @@ export function AnalyticsDashboard() {
             <span className={styles.label}>Status Distribution:</span>
             <div className={styles.distribution}>
               <div className={styles.distributionItem}>
-                <span>On Target: {statistics.on_target_count}</span>
+                <span>On Target: {statistics.on_target_count ?? 0}</span>
                 <span className={styles.bar} style={{ 
                   backgroundColor: '#51cf66',
-                  width: `${(statistics.on_target_count / statistics.total_runs) * 100}%`
+                  width: `${statistics.total_runs ? ((statistics.on_target_count ?? 0) / statistics.total_runs) * 100 : 0}%`
                 }} />
               </div>
               <div className={styles.distributionItem}>
-                <span>Below Min: {statistics.below_min_count || 0}</span>
+                <span>Below Min: {statistics.below_min_count ?? 0}</span>
                 <span className={styles.bar} style={{ 
                   backgroundColor: '#ff6b6b',
-                  width: `${((statistics.below_min_count || 0) / statistics.total_runs) * 100}%`
+                  width: `${statistics.total_runs ? ((statistics.below_min_count ?? 0) / statistics.total_runs) * 100 : 0}%`
                 }} />
               </div>
               <div className={styles.distributionItem}>
-                <span>Above Max: {statistics.above_max_count || 0}</span>
+                <span>Above Max: {statistics.above_max_count ?? 0}</span>
                 <span className={styles.bar} style={{ 
                   backgroundColor: '#ffa94d',
-                  width: `${((statistics.above_max_count || 0) / statistics.total_runs) * 100}%`
+                  width: `${statistics.total_runs ? ((statistics.above_max_count ?? 0) / statistics.total_runs) * 100 : 0}%`
                 }} />
               </div>
               <div className={styles.distributionItem}>
-                <span>Off Target: {statistics.off_target_count || 0}</span>
+                <span>Off Target: {statistics.off_target_count ?? 0}</span>
                 <span className={styles.bar} style={{ 
                   backgroundColor: '#ff922b',
-                  width: `${((statistics.off_target_count || 0) / statistics.total_runs) * 100}%`
+                  width: `${statistics.total_runs ? ((statistics.off_target_count ?? 0) / statistics.total_runs) * 100 : 0}%`
                 }} />
               </div>
             </div>
