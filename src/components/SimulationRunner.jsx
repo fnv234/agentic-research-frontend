@@ -1,17 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { useScenarios, useSimulator } from '../hooks/useAPI';
+import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { useScenarios, useSimulator, useSensitivity } from '../hooks/useAPI';
 import styles from './SimulationRunner.module.css';
 import { AgentPerspectives } from './Agents';
 
 export function SimulationRunner() {
   const { scenarios, loading: scenariosLoading, fetchScenarios } = useScenarios();
   const { simulations, currentSimulation, loading: simLoading, runSimulation } = useSimulator();
-  
+  const { series: sensitivitySeries, loading: sensitivityLoading, error: sensitivityError, runSensitivity } = useSensitivity();
+
   const [selectedScenario, setSelectedScenario] = useState('');
   const [collaboration, setCollaboration] = useState('collaborative');
   const [riskTolerance, setRiskTolerance] = useState(0.5);
   const [numYears, setNumYears] = useState(5);
+  const [sensitivityVary, setSensitivityVary] = useState('risk_tolerance');
+  const [sensitivityRan, setSensitivityRan] = useState(false);
 
   useEffect(() => {
     fetchScenarios();
@@ -31,6 +34,17 @@ export function SimulationRunner() {
 
     await runSimulation({
       scenario: selectedScenario,
+      agent_collaboration: collaboration,
+      risk_tolerance: parseFloat(riskTolerance),
+      num_years: numYears
+    });
+  };
+
+  const handleRunSensitivity = async () => {
+    setSensitivityRan(true);
+    await runSensitivity({
+      vary: sensitivityVary,
+      scenario: selectedScenario || 'simple_deterministic',
       agent_collaboration: collaboration,
       risk_tolerance: parseFloat(riskTolerance),
       num_years: numYears
@@ -186,6 +200,39 @@ export function SimulationRunner() {
             </ResponsiveContainer>
           </div>
 
+          {currentSimulation.results.time_series && currentSimulation.results.time_series.some(t => t.prevention_pct != null) && (
+            <div className={styles.chartContainer}>
+              <h4>Investment strategy (% invested in prevention, detection, response, recovery)</h4>
+              <p className={styles.tableDescription}>
+                Allocation at each decision point (year) over the simulation.
+              </p>
+              <div className={styles.tableWrapper}>
+                <table className={styles.strategyTable}>
+                  <thead>
+                    <tr>
+                      <th>Year</th>
+                      <th>Prevention %</th>
+                      <th>Detection %</th>
+                      <th>Response %</th>
+                      <th>Recovery %</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {currentSimulation.results.time_series.map((row) => (
+                      <tr key={row.year}>
+                        <td>{row.year}</td>
+                        <td>{row.prevention_pct ?? '-'}</td>
+                        <td>{row.detection_pct ?? '-'}</td>
+                        <td>{row.response_pct ?? '-'}</td>
+                        <td>{row.recovery_pct ?? '-'}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+
           {currentSimulation.results.agent_perspectives && currentSimulation.results.agent_perspectives.length > 0 ? (
             <AgentPerspectives 
               simulation={currentSimulation.results} 
@@ -222,6 +269,48 @@ export function SimulationRunner() {
           </div>
         </div>
       )}
+
+      <div className={styles.sensitivitySection}>
+        <h3>Sensitivity analysis</h3>
+        <p className={styles.tableDescription}>
+          Run many simulations varying one parameter and compare outcomes in one graph.
+        </p>
+        <div className={styles.controlPanel}>
+          <div className={styles.controlGroup}>
+            <label>Vary parameter</label>
+            <select value={sensitivityVary} onChange={(e) => setSensitivityVary(e.target.value)}>
+              <option value="risk_tolerance">Risk tolerance (0%, 25%, 50%, 75%, 100%)</option>
+              <option value="scenario">Scenario (all four)</option>
+              <option value="agent_collaboration">Agent collaboration (collaborative / uncollaborative)</option>
+            </select>
+          </div>
+          <button
+            className={styles.runBtn}
+            onClick={handleRunSensitivity}
+            disabled={sensitivityLoading}
+          >
+            {sensitivityLoading ? 'Running sensitivity...' : 'Run sensitivity analysis'}
+          </button>
+        </div>
+        {sensitivityError && <div className={styles.error}>{sensitivityError}</div>}
+        {sensitivityRan && sensitivitySeries.length > 0 && (
+          <div className={styles.chartContainer}>
+            <h4>Final profit by parameter</h4>
+            <ResponsiveContainer width="100%" height={320}>
+              <BarChart data={sensitivitySeries} margin={{ top: 10, right: 20, left: 10, bottom: 60 }}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="x_label" angle={-25} textAnchor="end" height={60} />
+                <YAxis label={{ value: 'Final profit ($)', angle: -90, position: 'insideLeft' }} />
+                <Tooltip formatter={(v) => [`$${(Number(v) / 1e6).toFixed(2)}M`, 'Final profit']} />
+                <Bar dataKey="final_profit" fill="#4d8cff" name="Final profit" isAnimationActive={false} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        )}
+        {sensitivityRan && sensitivitySeries.length === 0 && !sensitivityLoading && (
+          <p className={styles.noData}>No sensitivity data. Run the analysis above.</p>
+        )}
+      </div>
     </div>
   );
 }

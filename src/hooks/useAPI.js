@@ -327,3 +327,33 @@ export function useSimulator() {
     runSimulation
   };
 }
+
+export function useSensitivity() {
+  const [series, setSeries] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const runSensitivity = useCallback(async (params) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(`${API_BASE}/api/sensitivity`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(params)
+      });
+      if (!response.ok) throw new Error(`API error: ${response.status}`);
+      const data = await response.json();
+      setSeries(data.series || []);
+      return data;
+    } catch (err) {
+      setError(err.message);
+      setSeries([]);
+      return null;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  return { series, loading, error, runSensitivity };
+}

@@ -148,6 +148,67 @@
   font-size: 16px;
 }
 
+.tableDescription {
+  margin: 0 0 12px 0;
+  color: #666;
+  font-size: 13px;
+}
+
+.tableWrapper {
+  overflow-x: auto;
+  margin-top: 10px;
+}
+
+.strategyTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.strategyTable th,
+.strategyTable td {
+  padding: 10px 14px;
+  text-align: right;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.strategyTable th {
+  background: #f0f4ff;
+  color: #333;
+  font-weight: 600;
+  text-align: right;
+}
+
+.strategyTable td:first-child,
+.strategyTable th:first-child {
+  text-align: left;
+}
+
+.noData {
+  color: #888;
+  font-style: italic;
+  padding: 16px 0;
+}
+
+.sensitivitySection {
+  margin-top: 32px;
+  padding: 20px;
+  background: #fafafa;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+}
+
+.sensitivitySection h3 {
+  margin-top: 0;
+  color: #333;
+}
+
+.error {
+  color: #c00;
+  padding: 10px 0;
+  font-size: 14px;
+}
+
 .parametersBox {
   background: #f0f4ff;
   padding: 15px;
