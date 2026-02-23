@@ -200,7 +200,7 @@ export function SimulationRunner() {
             </ResponsiveContainer>
           </div>
 
-          {currentSimulation.results.time_series && currentSimulation.results.time_series.some(t => t.prevention_pct != null) && (
+          {currentSimulation.results?.time_series?.length > 0 && (
             <div className={styles.chartContainer}>
               <h4>Investment strategy (% invested in prevention, detection, response, recovery)</h4>
               <p className={styles.tableDescription}>
@@ -221,10 +221,10 @@ export function SimulationRunner() {
                     {currentSimulation.results.time_series.map((row) => (
                       <tr key={row.year}>
                         <td>{row.year}</td>
-                        <td>{row.prevention_pct ?? '-'}</td>
-                        <td>{row.detection_pct ?? '-'}</td>
-                        <td>{row.response_pct ?? '-'}</td>
-                        <td>{row.recovery_pct ?? '-'}</td>
+                        <td>{row.prevention_pct != null ? row.prevention_pct : '-'}</td>
+                        <td>{row.detection_pct != null ? row.detection_pct : '-'}</td>
+                        <td>{row.response_pct != null ? row.response_pct : '-'}</td>
+                        <td>{row.recovery_pct != null ? row.recovery_pct : '-'}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -292,8 +292,15 @@ export function SimulationRunner() {
             {sensitivityLoading ? 'Running sensitivity...' : 'Run sensitivity analysis'}
           </button>
         </div>
-        {sensitivityError && <div className={styles.error}>{sensitivityError}</div>}
-        {sensitivityRan && sensitivitySeries.length > 0 && (
+        {sensitivityError && (
+          <div className={styles.error}>
+            <strong>Sensitivity request failed:</strong> {sensitivityError}
+            <p className={styles.errorHint}>
+              This usually means the backend is not running or not reachable. Start it with: <code>cd agentic-research-backend && python -m app.dashboard</code> (port 5001). If you already have it running, check that the frontend is using the right API URL (e.g. <code>VITE_API_URL=http://localhost:5001</code>).
+            </p>
+          </div>
+        )}
+        {sensitivityRan && !sensitivityError && sensitivitySeries.length > 0 && (
           <div className={styles.chartContainer}>
             <h4>Final profit by parameter</h4>
             <ResponsiveContainer width="100%" height={320}>
@@ -307,7 +314,7 @@ export function SimulationRunner() {
             </ResponsiveContainer>
           </div>
         )}
-        {sensitivityRan && sensitivitySeries.length === 0 && !sensitivityLoading && (
+        {sensitivityRan && !sensitivityError && sensitivitySeries.length === 0 && !sensitivityLoading && (
           <p className={styles.noData}>No sensitivity data. Run the analysis above.</p>
         )}
       </div>
