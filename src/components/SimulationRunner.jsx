@@ -218,25 +218,21 @@ export function SimulationRunner() {
                     </tr>
                   </thead>
                   <tbody>
-                    {currentSimulation.results.time_series.map((row, idx) => {
-                      const totalYears = currentSimulation.results.time_series.length;
-                      const pct = getInvestmentPct(row, totalYears, idx + 1);
-                      return (
-                        <tr key={row.year}>
-                          <td>{row.year}</td>
-                          <td>{pct.prevention}</td>
-                          <td>{pct.detection}</td>
-                          <td>{pct.response}</td>
-                          <td>{pct.recovery}</td>
-                        </tr>
-                      );
-                    })}
+                    {currentSimulation.results.time_series.map((row) => (
+                      <tr key={row.year}>
+                        <td>{row.year}</td>
+                        <td>{row.prevention_pct != null ? Number(row.prevention_pct) : '–'}</td>
+                        <td>{row.detection_pct != null ? Number(row.detection_pct) : '–'}</td>
+                        <td>{row.response_pct != null ? Number(row.response_pct) : '–'}</td>
+                        <td>{row.recovery_pct != null ? Number(row.recovery_pct) : '–'}</td>
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               </div>
               {currentSimulation.results.time_series[0]?.prevention_pct == null && (
                 <p className={styles.tableDescription}>
-                  Showing estimated allocation. Redeploy the backend to get exact values from the server.
+                  Allocation is computed by the backend (same logic as the presentation figures). Redeploy the backend to the latest version to see percentages here.
                 </p>
               )}
             </div>
@@ -279,7 +275,7 @@ export function SimulationRunner() {
         </div>
       )}
 
-      {/* <div className={styles.sensitivitySection}>
+      <div className={styles.sensitivitySection}>
         <h3>Sensitivity analysis</h3>
         <p className={styles.tableDescription}>
           Run many simulations varying one parameter and compare outcomes in one graph.
@@ -326,7 +322,7 @@ export function SimulationRunner() {
         {sensitivityRan && !sensitivityError && sensitivitySeries.length === 0 && !sensitivityLoading && (
           <p className={styles.noData}>No sensitivity data. Run the analysis above.</p>
         )}
-      </div> */}
+      </div>
     </div>
   );
 }
