@@ -51,30 +51,6 @@ export function SimulationRunner() {
     });
   };
 
-  // Use backend percentages if present; otherwise estimate so table always shows values (e.g. if backend not redeployed)
-  function getInvestmentPct(row, totalYears, yearOneBased) {
-    const hasBackend = row.prevention_pct != null && row.detection_pct != null;
-    if (hasBackend) {
-      return {
-        prevention: Number(row.prevention_pct),
-        detection: Number(row.detection_pct),
-        response: Number(row.response_pct),
-        recovery: Number(row.recovery_pct)
-      };
-    }
-    const progress = yearOneBased / Math.max(totalYears, 1);
-    let p = 0.38 - progress * 0.06;
-    let d = 0.30 - progress * 0.04;
-    let r = 0.18 + progress * 0.08;
-    let rec = 0.14 + progress * 0.05;
-    const total = p + d + r + rec;
-    p = Math.round((p / total) * 1000) / 10;
-    d = Math.round((d / total) * 1000) / 10;
-    r = Math.round((r / total) * 1000) / 10;
-    rec = Math.round((rec / total) * 1000) / 10;
-    return { prevention: p, detection: d, response: r, recovery: rec };
-  }
-
   if (scenariosLoading) return <div className={styles.loading}>Loading scenarios...</div>;
 
   return (
@@ -303,7 +279,7 @@ export function SimulationRunner() {
         </div>
       )}
 
-      <div className={styles.sensitivitySection}>
+      {/* <div className={styles.sensitivitySection}>
         <h3>Sensitivity analysis</h3>
         <p className={styles.tableDescription}>
           Run many simulations varying one parameter and compare outcomes in one graph.
@@ -350,7 +326,7 @@ export function SimulationRunner() {
         {sensitivityRan && !sensitivityError && sensitivitySeries.length === 0 && !sensitivityLoading && (
           <p className={styles.noData}>No sensitivity data. Run the analysis above.</p>
         )}
-      </div>
+      </div> */}
     </div>
   );
 }
