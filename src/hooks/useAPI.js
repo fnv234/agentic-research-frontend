@@ -336,18 +336,34 @@ export function useSensitivity() {
   const runSensitivity = useCallback(async (params) => {
     setLoading(true);
     setError(null);
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 90000); // 90s for Render spin-up
     try {
       const response = await fetch(`${API_BASE}/api/sensitivity`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(params)
+        body: JSON.stringify(params),
+        signal: controller.signal
       });
-      if (!response.ok) throw new Error(`API error: ${response.status}`);
+      clearTimeout(timeoutId);
+      if (!response.ok) {
+        const text = await response.text();
+        let errMsg = `API error: ${response.status}`;
+        try {
+          const data = JSON.parse(text);
+          if (data.error) errMsg = data.error;
+        } catch (_) {}
+        throw new Error(errMsg);
+      }
       const data = await response.json();
       setSeries(data.series || []);
       return data;
     } catch (err) {
-      setError(err.message);
+      clearTimeout(timeoutId);
+      let message = err.message || 'Request failed';
+      if (err.name === 'AbortError') message = 'Request timed out (90s). If using Render, the backend may be spinning up — try again in a minute.';
+      else if (message === 'Failed to fetch') message = 'Network error: backend unreachable or CORS blocking. If using Render, wait ~1 min for spin-up then try again. Check the browser Console (F12) for details.';
+      setError(message);
       setSeries([]);
       return null;
     } finally {

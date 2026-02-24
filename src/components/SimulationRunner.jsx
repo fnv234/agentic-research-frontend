@@ -51,6 +51,30 @@ export function SimulationRunner() {
     });
   };
 
+  // Use backend percentages if present; otherwise estimate so table always shows values (e.g. if backend not redeployed)
+  function getInvestmentPct(row, totalYears, yearOneBased) {
+    const hasBackend = row.prevention_pct != null && row.detection_pct != null;
+    if (hasBackend) {
+      return {
+        prevention: Number(row.prevention_pct),
+        detection: Number(row.detection_pct),
+        response: Number(row.response_pct),
+        recovery: Number(row.recovery_pct)
+      };
+    }
+    const progress = yearOneBased / Math.max(totalYears, 1);
+    let p = 0.38 - progress * 0.06;
+    let d = 0.30 - progress * 0.04;
+    let r = 0.18 + progress * 0.08;
+    let rec = 0.14 + progress * 0.05;
+    const total = p + d + r + rec;
+    p = Math.round((p / total) * 1000) / 10;
+    d = Math.round((d / total) * 1000) / 10;
+    r = Math.round((r / total) * 1000) / 10;
+    rec = Math.round((rec / total) * 1000) / 10;
+    return { prevention: p, detection: d, response: r, recovery: rec };
+  }
+
   if (scenariosLoading) return <div className={styles.loading}>Loading scenarios...</div>;
 
   return (
@@ -218,18 +242,27 @@ export function SimulationRunner() {
                     </tr>
                   </thead>
                   <tbody>
-                    {currentSimulation.results.time_series.map((row) => (
-                      <tr key={row.year}>
-                        <td>{row.year}</td>
-                        <td>{row.prevention_pct != null ? row.prevention_pct : '-'}</td>
-                        <td>{row.detection_pct != null ? row.detection_pct : '-'}</td>
-                        <td>{row.response_pct != null ? row.response_pct : '-'}</td>
-                        <td>{row.recovery_pct != null ? row.recovery_pct : '-'}</td>
-                      </tr>
-                    ))}
+                    {currentSimulation.results.time_series.map((row, idx) => {
+                      const totalYears = currentSimulation.results.time_series.length;
+                      const pct = getInvestmentPct(row, totalYears, idx + 1);
+                      return (
+                        <tr key={row.year}>
+                          <td>{row.year}</td>
+                          <td>{pct.prevention}</td>
+                          <td>{pct.detection}</td>
+                          <td>{pct.response}</td>
+                          <td>{pct.recovery}</td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>
+              {currentSimulation.results.time_series[0]?.prevention_pct == null && (
+                <p className={styles.tableDescription}>
+                  Showing estimated allocation. Redeploy the backend to get exact values from the server.
+                </p>
+              )}
             </div>
           )}
 
@@ -296,7 +329,7 @@ export function SimulationRunner() {
           <div className={styles.error}>
             <strong>Sensitivity request failed:</strong> {sensitivityError}
             <p className={styles.errorHint}>
-              This usually means the backend is not running or not reachable. Start it with: <code>cd agentic-research-backend && python -m app.dashboard</code> (port 5001). If you already have it running, check that the frontend is using the right API URL (e.g. <code>VITE_API_URL=http://localhost:5001</code>).
+              If the backend is on Render, wait 1–2 minutes for spin-up (free tier) then try again. Ensure <code>VITE_API_URL=https://agentic-research-backend.onrender.com</code> in <code>.env</code> and restart the dev server. Check the browser Console (F12) for CORS or network errors.
             </p>
           </div>
         )}
